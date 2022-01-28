@@ -1,0 +1,81 @@
+ubuntu 21.10 needed this:
+*  `curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -`
+*  `curl -s -L https://nvidia.github.io/nvidia-docker/ubuntu20.04/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker`
+*  update and install nvidia-container-runtime
+*  follow https://github.com/NVIDIA/nvidia-docker/issues/1447#issuecomment-949597329
+
+Now i can run this:
+
+```
+% docker run --rm --gpus all --device /dev/nvidia0 --device /dev/nvidia-modeset  --device /dev/nvidia-uvm --device /dev/nvidia-uvm-tools --device /dev/nvidiactl  nvidia/cuda:11.0-base nvidia-smi
+Thu Jan 27 02:50:16 2022       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 470.86       Driver Version: 470.86       CUDA Version: 11.4     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  NVIDIA GeForce ...  Off  | 00000000:01:00.0  On |                  N/A |
+|  0%   40C    P8    12W / 175W |   1279MiB /  7974MiB |      5%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
++-----------------------------------------------------------------------------+
+```
+
+`git clone https://github.com/esemeniuc/openpose-docker.git`
+
+my sample videos:
+
+ffmpeg -ss 5 -t 2 -i panoptic-toolbox/150821_dance1/hdVideos/hd_00_00.mp4 -c:v mjpeg vid0.mp4
+ffmpeg -ss 5 -t 2 -i panoptic-toolbox/150821_dance1/hdVideos/hd_00_01.mp4 -c:v mjpeg vid1.mp4
+ffmpeg -ss 5 -t 2 -i panoptic-toolbox/150821_dance1/hdVideos/hd_00_02.mp4 -c:v mjpeg vid2.mp4
+
+
+goal:
+
+# Video
+./build/examples/openpose/openpose.bin --video output_folder_path/video.avi --3d_views 3 --3d --number_people_max 1 --output_resolution {desired_output_resolution}
+# Images
+./build/examples/openpose/openpose.bin --image_dir output_folder_path/ --3d_views 3 --3d --number_people_max 1 --output_resolution {desired_output_resolution}
+
+flag docs for that:
+
+    -3d (Running OpenPose 3-D reconstruction demo: 1) Reading from a stereo
+      camera system. 2) Performing 3-D reconstruction from the multiple views.
+      3) Displaying 3-D reconstruction results. Note that it will only display
+      1 person. If multiple people is present, it will fail.) type: bool
+      default: false
+
+    -3d_views (Complementary option for `--image_dir` or `--video`. OpenPose
+      will read as many images per iteration, allowing tasks such as stereo
+      camera processing (`--3d`). Note that `--camera_parameter_path` must be
+      set. OpenPose must find as many `xml` files in the parameter folder as
+      this number indicates.) type: int32 default: -1
+
+    -image_dir (Process a directory of images. Use `examples/media/` for our
+      default example folder with 20 images. Read all standard formats (jpg,
+      png, bmp, etc.).) type: string default: ""
+
+    -number_people_max (This parameter will limit the maximum number of people
+      detected, by keeping the people with top scores. The score is based in
+      person area over the image, body part score, as well as joint score
+      (between each pair of connected body parts). Useful if you know the exact
+      number of people in the scene, so it can remove false positives (if all
+      the people have been detected. However, it might also include false
+      negatives by removing very small or highly occluded people. -1 will keep
+      them all.) type: int32 default: -1
+
+    -output_resolution (The image resolution (display and output). Use "-1x-1"
+      to force the program to use the input image resolution.) type: string
+      default: "-1x-1"
+
+    -video (Use a video file instead of the camera. Use
+      `examples/media/video.avi` for our default example video.) type: string
+      default: ""
