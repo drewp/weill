@@ -28,5 +28,5 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
 RUN git submodule update --init --recursive --remote
 RUN cd models; ./getModels.sh
 RUN /bin/bash /openpose/scripts/ubuntu/install_deps.sh
-RUN mkdir build; cd build; cmake -DBUILD_PYTHON=1 ..
+RUN mkdir build; cd build; cmake -DBUILD_PYTHON=1 -DGPU_MODE=CPU_ONLY ..
 RUN cd build; make -j 6
