@@ -29,5 +29,5 @@ run_webcam_demo:
 run_py_tut_01:
 	$(RUN) zsh -c 'cd /openpose/build/examples/tutorial_api_python; python3 01_body_from_image.py'
 
-run_local:
-	$(RUN) python3 /data/local.py
+run_analyze:
+	$(RUN) python3 /data/analyze.py
